@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'coopcredit-monitor'
+
+scrape_configs:
+  # CoopCredit Credit Application Service
+  - job_name: 'credit-application-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['credit-application:8080']
+        labels:
+          application: 'credit-application-service'
+          environment: 'development'
+
+  # Risk Central Mock Service (si tiene actuator)
+  - job_name: 'risk-central-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['risk-central-mock:8081']
+        labels:
+          application: 'risk-central-service'
+          environment: 'development'
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

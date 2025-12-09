@@ -1,0 +1,57 @@
+services:
+  # ---------------------------------------------------
+  # 1. Risk Central Mock Service
+  # ---------------------------------------------------
+  - type: web
+    name: risk-central-mock
+    runtime: docker
+    rootDir: risk-central-mock-service
+    plan: free
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+    healthCheckPath: /actuator/health
+
+  # ---------------------------------------------------
+  # 2. Credit Application Service
+  # ---------------------------------------------------
+  - type: web
+    name: credit-application-service
+    runtime: docker
+    rootDir: credit-application-service
+    plan: free
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: RISK_CENTRAL_URL
+        fromService:
+          type: web
+          name: risk-central-mock
+          property: url
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: coopcredit-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: coopcredit-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: coopcredit-db
+          property: password
+    healthCheckPath: /actuator/health
+
+databases:
+  # ---------------------------------------------------
+  # 3. PostgreSQL Database
+  # ---------------------------------------------------
+  - name: coopcredit-db
+    databaseName: coopcredit_db
+    user: postgres
+    plan: free
+    ipAllowList: [] # Allow all for simplicity, restrict in prod
