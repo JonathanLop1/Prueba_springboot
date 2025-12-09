@@ -1,14 +1,14 @@
-# ✅ ¡SISTEMA DE OBSERVABILIDAD FUNCIONANDO!
+# ✅ OBSERVABILITY SYSTEM WORKING!
 
-## 🎉 Confirmación
+## 🎉 Confirmation
 
-El sistema de observabilidad con Prometheus + Grafana está **100% operativo** con métricas funcionando correctamente.
+The observability system with Prometheus + Grafana is **100% operational** with metrics working correctly.
 
 ---
 
-## 📊 Métricas Verificadas
+## 📊 Verified Metrics
 
-Las siguientes métricas están siendo recolectadas correctamente:
+The following metrics are being collected correctly:
 
 ```
 ✅ credit_applications_created_total{status="success"} = 11.0
@@ -20,60 +20,60 @@ Las siguientes métricas están siendo recolectadas correctamente:
 
 ---
 
-## 🌐 Acceso al Dashboard
+## 🌐 Dashboard Access
 
 ### Grafana
 1. **URL**: http://localhost:3000
-2. **Usuario**: `admin`
+2. **User**: `admin`
 3. **Password**: `admin`
 4. **Dashboard**: CoopCredit - Business Metrics
 
 ### Prometheus  
 - **URL**: http://localhost:19090
-- **Targets**: Status → Targets → Verificar que esté UP
+- **Targets**: Status → Targets → Verify it is UP
 
 ---
 
-## 🧪 Generar Más Tráfico
+## 🧪 Generate More Traffic
 
-### Opción 1: Test Único
+### Option 1: Single Test
 ```bash
 ./test-api.sh
 ```
 
-### Opción 2: Tráfico Continuo
+### Option 2: Continuous Traffic
 ```bash
 ./generate-traffic.sh
 ```
 
-Esto ejecutará tests cada 5 segundos y mostrará las métricas actualizadas cada 5 tests.
+This will run tests every 5 seconds and show updated metrics every 5 tests.
 
-**Para detener**: Presiona `Ctrl+C`
-
----
-
-## 📈 Ver Datos en Grafana
-
-1. Abre http://localhost:3000 (admin/admin)
-2. Click en **☰** → **Dashboards**  
-3. Selecciona **CoopCredit - Business Metrics**
-4. Ejecuta `./generate-traffic.sh` en otra terminal
-5. **Observa las gráficas actualizándose en tiempo real** (refresh cada 5s)
+**To stop**: Press `Ctrl+C`
 
 ---
 
-## 🔍 Queries Útiles en Prometheus
+## 📈 View Data in Grafana
 
-Abre http://localhost:19090/graph y prueba:
+1. Open http://localhost:3000 (admin/admin)
+2. Click on **☰** → **Dashboards**  
+3. Select **CoopCredit - Business Metrics**
+4. Run `./generate-traffic.sh` in another terminal
+5. **Watch graphs updating in real-time** (refresh every 5s)
+
+---
+
+## 🔍 Useful Queries in Prometheus
+
+Open http://localhost:19090/graph and try:
 
 ```promql
-# Solicitudes creadas
+# Created applications
 credit_applications_created_total{status="success"}
 
-# Rate por minuto
+# Rate per minute
 rate(credit_applications_created_total[1m])
 
-# Tiempo de evaluación
+# Evaluation time
 rate(credit_application_evaluation_duration_seconds_sum[5m]) / 
 rate(credit_application_evaluation_duration_seconds_count[5m])
 
@@ -83,26 +83,26 @@ rate(http_server_requests_seconds_count[1m])
 
 ---
 
-## ✅ Checklist Final
+## ✅ Final Checklist
 
-- [x] Prometheus funcionando (puerto 19090)
-- [x] Grafana funcionando (puerto 3000)
-- [x] Métricas custom funcionando
-- [x] Counters incrementando correctamente
-- [x] Timers midiendo duración
-- [x] Dashboard pre-configurado
-- [x] Datasource conectado
-- [x] Script de generación de tráfico
-
----
-
-## 🎯 Próximos Pasos
-
-1. **Ejecutar**: `./generate-traffic.sh`
-2. **Abrir Grafana**: http://localhost:3000
-3. **Ver dashboard**: CoopCredit - Business Metrics
-4. **Disfrutar**: Métricas en tiempo real! 🚀
+- [x] Prometheus working (port 19090)
+- [x] Grafana working (port 3000)
+- [x] Custom metrics working
+- [x] Counters incrementing correctly
+- [x] Timers measuring duration
+- [x] Pre-configured dashboard
+- [x] Datasource connected
+- [x] Traffic generation script
 
 ---
 
-¡Observabilidad completa y funcionando al 100%!
+## 🎯 Next Steps
+
+1. **Run**: `./generate-traffic.sh`
+2. **Open Grafana**: http://localhost:3000
+3. **View dashboard**: CoopCredit - Business Metrics
+4. **Enjoy**: Real-time metrics! 🚀
+
+---
+
+Observability complete and 100% working!

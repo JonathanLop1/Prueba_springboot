@@ -1,43 +1,43 @@
-# Sistema de Gestión de Créditos - CoopCredit
+# Credit Management System - CoopCredit
 
-## 📋 Descripción
+## 📋 Description
 
-Sistema de gestión de solicitudes de crédito basado en microservicios con arquitectura hexagonal. Permite la gestión de afiliados, solicitudes de crédito y evaluación de riesgo crediticio mediante integración con un servicio externo mock.
+Credit application management system based on microservices with hexagonal architecture. It allows the management of affiliates, credit applications, and credit risk evaluation through integration with an external mock service.
 
-### Características Principales
+### Key Features
 
-- ✅ Autenticación JWT con roles (ADMIN, ANALISTA, AFILIADO)
-- ✅ Gestión completa de afiliados (CRUD)
-- ✅ Solicitudes de crédito con flujo completo PENDIENTE → APROBADO/RECHAZADO
-- ✅ Evaluación automática de riesgo mediante microservicio externo
-- ✅ Arquitectura Hexagonal (Ports & Adapters)
-- ✅ Persistencia con JPA y PostgreSQL
-- ✅ Migraciones automáticas con Flyway
-- ✅ Observabilidad con Spring Boot Actuator + Micrometer
-- ✅ Manejo de errores con RFC 7807 (ProblemDetail)
-- ✅ Docker Compose para despliegue completo
+- ✅ JWT Authentication with roles (ADMIN, ANALYST, AFFILIATE)
+- ✅ Complete affiliate management (CRUD)
+- ✅ Credit applications with full flow PENDING → APPROVED/REJECTED
+- ✅ Automatic risk evaluation via external microservice
+- ✅ Hexagonal Architecture (Ports & Adapters)
+- ✅ Persistence with JPA and PostgreSQL
+- ✅ Automatic migrations with Flyway
+- ✅ Observability with Spring Boot Actuator + Micrometer
+- ✅ Error handling with RFC 7807 (ProblemDetail)
+- ✅ Docker Compose for full deployment
 
 ---
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
-### Microservicios
+### Microservices
 
-1. **credit-application-service** (Puerto 8080)
-   - Gestión de afiliados
-   - Gestión de solicitudes de crédito
-   - Autenticación y autorización
-   - Evaluación de solicitudes
+1. **credit-application-service** (Port 8080)
+   - Affiliate management
+   - Credit application management
+   - Authentication and authorization
+   - Application evaluation
 
-2. **risk-central-mock-service** (Puerto 8081)
-   - Evaluación de riesgo crediticio
-   - Algoritmo determinista basado en hash del documento
+2. **risk-central-mock-service** (Port 8081)
+   - Credit risk evaluation
+   - Deterministic algorithm based on document hash
 
-3. **PostgreSQL Database** (Puerto 5432)
-   - Base de datos principal
-   - Migraciones con Flyway
+3. **PostgreSQL Database** (Port 5432)
+   - Main database
+   - Migrations with Flyway
 
-### Arquitectura Hexagonal
+### Hexagonal Architecture
 
 ```
 ┌─────────────────────────────────────┐
@@ -63,69 +63,69 @@ Sistema de gestión de solicitudes de crédito basado en microservicios con arqu
 
 ---
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
-### Requisitos Previos
+### Prerequisites
 
 - Docker & Docker Compose
-- Java 17 (solo para desarrollo local)
-- Maven 3.8+ (solo para desarrollo local)
+- Java 17 (only for local development)
+- Maven 3.8+ (only for local development)
 
-### Ejecución con Docker Compose (Recomendado)
+### Execution with Docker Compose (Recommended)
 
 ```bash
-# Clonar el repositorio
-cd /ruta/al/proyecto
+# Clone the repository
+cd /path/to/project
 
-# Iniciar todos los servicios
+# Start all services
 docker-compose up --build -d
 
-# Verificar estado
+# Verify status
 docker-compose ps
 
-# Ver logs
+# View logs
 docker-compose logs -f credit-application
 ```
 
-Los servicios estarán disponibles en:
-- **API Principal**: http://localhost:8080
+Services will be available at:
+- **Main API**: http://localhost:8080
 - **Risk Central**: http://localhost:8081  
 - **PostgreSQL**: localhost:5432
 
-### Ejecución Local (Desarrollo)
+### Local Execution (Development)
 
 ```bash
-# 1. Iniciar PostgreSQL
+# 1. Start PostgreSQL
 docker run -d -p 5432:5432 \
   -e POSTGRES_DB=coopcredit_db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   postgres:16-alpine
 
-# 2. Iniciar Risk Central Mock
+# 2. Start Risk Central Mock
 cd risk-central-mock-service
 mvn spring-boot:run
 
-# 3. Iniciar Credit Application Service
+# 3. Start Credit Application Service
 cd credit-application-service
 mvn spring-boot:run
 ```
 
 ---
 
-## 🔐 Autenticación
+## 🔐 Authentication
 
-### Usuarios Predefinidos
+### Predefined Users
 
-Todos los usuarios tienen la contraseña: `Admin123`
+All users have the password: `Admin123`
 
-| Usuario | Password | Rol | Descripción |
+| User | Password | Role | Description |
 |---------|----------|-----|-------------|
-| `admin` | `Admin123` | ROLE_ADMIN | Acceso total al sistema |
-| `analyst1` | `Admin123` | ROLE_ANALISTA | Evaluar solicitudes |
-| `affiliate1` | `Admin123` | ROLE_AFILIADO | Crear solicitudes |
+| `admin` | `Admin123` | ROLE_ADMIN | Full system access |
+| `analyst1` | `Admin123` | ROLE_ANALISTA | Evaluate applications |
+| `affiliate1` | `Admin123` | ROLE_AFILIADO | Create applications |
 
-### Ejemplo de Login
+### Login Example
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
@@ -136,7 +136,7 @@ curl -X POST http://localhost:8080/api/auth/login \
   }'
 ```
 
-Respuesta:
+Response:
 ```json
 {
   "token": "eyJhbGciOiJIUzUxMiJ9...",
@@ -146,7 +146,7 @@ Respuesta:
 }
 ```
 
-**Uso del Token:**
+**Using the Token:**
 ```bash
 curl -H "Authorization: Bearer {token}" http://localhost:8080/api/affiliates
 ```
@@ -160,46 +160,46 @@ curl -H "Authorization: Bearer {token}" http://localhost:8080/api/affiliates
 http://localhost:8080
 ```
 
-### Autenticación (`/api/auth`)
+### Authentication (`/api/auth`)
 
-| Método | Endpoint | Descripción | Autenticación |
+| Method | Endpoint | Description | Authentication |
 |--------|----------|-------------|---------------|
-| POST | `/api/auth/register` | Registrar nuevo usuario | No |
-| POST | `/api/auth/login` | Iniciar sesión | No |
+| POST | `/api/auth/register` | Register new user | No |
+| POST | `/api/auth/login` | Login | No |
 
-### Afiliados (`/api/affiliates`)
+### Affiliates (`/api/affiliates`)
 
-| Método | Endpoint | Descripción | Roles Permitidos |
+| Method | Endpoint | Description | Allowed Roles |
 |--------|----------|-------------|------------------|
-| POST | `/api/affiliates` | Crear afiliado | ADMIN, ANALISTA |
-| GET | `/api/affiliates` | Listar afiliados | Autenticado |
-| GET | `/api/affiliates/{id}` | Ver afiliado | Autenticado |
-| PUT | `/api/affiliates/{id}` | Actualizar afiliado | ADMIN |
-| DELETE | `/api/affiliates/{id}` | Eliminar afiliado | ADMIN |
+| POST | `/api/affiliates` | Create affiliate | ADMIN, ANALYST |
+| GET | `/api/affiliates` | List affiliates | Authenticated |
+| GET | `/api/affiliates/{id}` | View affiliate | Authenticated |
+| PUT | `/api/affiliates/{id}` | Update affiliate | ADMIN |
+| DELETE | `/api/affiliates/{id}` | Delete affiliate | ADMIN |
 
-### Solicitudes de Crédito (`/api/applications`)
+### Credit Applications (`/api/applications`)
 
-| Método | Endpoint | Descripción | Roles Permitidos |
+| Method | Endpoint | Description | Allowed Roles |
 |--------|----------|-------------|------------------|
-| POST | `/api/applications` | Crear solicitud | AFILIADO, ADMIN |
-| GET | `/api/applications` | Listar solicitudes | Autenticado |
-| GET | `/api/applications/{id}` | Ver solicitud | Autenticado |
-| POST | `/api/applications/{id}/evaluate` | Evaluar solicitud | ANALISTA, ADMIN |
+| POST | `/api/applications` | Create application | AFFILIATE, ADMIN |
+| GET | `/api/applications` | List applications | Authenticated |
+| GET | `/api/applications/{id}` | View application | Authenticated |
+| POST | `/api/applications/{id}/evaluate` | Evaluate application | ANALYST, ADMIN |
 
-### Monitoreo (`/actuator`)
+### Monitoring (`/actuator`)
 
-| Endpoint | Descripción |
+| Endpoint | Description |
 |----------|-------------|
-| `/actuator/health` | Estado del sistema |
-| `/actuator/metrics` | Métricas de la aplicación |
-| `/actuator/prometheus` | Métricas formato Prometheus |
-| `/actuator/info` | Información de la aplicación |
+| `/actuator/health` | System status |
+| `/actuator/metrics` | Application metrics |
+| `/actuator/prometheus` | Prometheus format metrics |
+| `/actuator/info` | Application information |
 
 ---
 
-## 💡 Ejemplos de Uso
+## 💡 Usage Examples
 
-### 1. Crear un Afiliado
+### 1. Create an Affiliate
 
 ```bash
 TOKEN="<admin-token>"
@@ -209,13 +209,13 @@ curl -X POST http://localhost:8080/api/affiliates \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
     "document": "1234567890",
-    "fullName": "Juan Pérez",
+    "fullName": "John Doe",
     "salary": 5000000,
     "affiliationDate": "2023-01-15"
   }'
 ```
 
-### 2. Crear Solicitud de Crédito
+### 2. Create Credit Application
 
 ```bash
 AFFILIATE_TOKEN="<affiliate-token>"
@@ -231,7 +231,7 @@ curl -X POST http://localhost:8080/api/applications \
   }'
 ```
 
-### 3. Evaluar Solicitud
+### 3. Evaluate Application
 
 ```bash
 ANALYST_TOKEN="<analyst-token>"
@@ -242,63 +242,63 @@ curl -X POST http://localhost:8080/api/applications/1/evaluate \
 
 ---
 
-## 🔄 Flujo de Evaluación de Crédito
+## 🔄 Credit Evaluation Flow
 
-1. **Afiliado crea solicitud** → Estado: PENDIENTE
-2. **Sistema llama a Risk Central** → Obtiene score y nivel de riesgo
-3. **Aplica políticas internas:**
-   - Score < 500 → RECHAZADO
-   - Score >= 500 → APROBADO
-4. **Actualiza solicitud** con resultado y evaluación
+1. **Affiliate creates application** → Status: PENDING
+2. **System calls Risk Central** → Gets score and risk level
+3. **Applies internal policies:**
+   - Score < 500 → REJECTED
+   - Score >= 500 → APPROVED
+4. **Updates application** with result and evaluation
 
 ---
 
-## 🧪 Pruebas
+## 🧪 Testing
 
-### 1. Pruebas Unitarias e Integración (JUnit 5 + Mockito)
-El proyecto cuenta con una suite completa de pruebas automáticas que cubren:
-- **Casos de Uso**: `RegisterCreditApplicationUseCase`, `EvaluateCreditApplicationUseCase`.
-- **Controladores**: `CreditApplicationController` (con MockMvc).
-- **Reglas de Negocio**: Validaciones de montos, antigüedad, capacidad de endeudamiento.
+### 1. Unit and Integration Tests (JUnit 5 + Mockito)
+The project has a complete suite of automatic tests covering:
+- **Use Cases**: `RegisterCreditApplicationUseCase`, `EvaluateCreditApplicationUseCase`.
+- **Controllers**: `CreditApplicationController` (with MockMvc).
+- **Business Rules**: Validations of amounts, seniority, debt capacity.
 
-Para ejecutar las pruebas:
+To run the tests:
 ```bash
 cd credit-application-service
 mvn test
 ```
 
-### 2. Script de Pruebas End-to-End
+### 2. End-to-End Test Script
 ```bash
 ./test-api.sh
 ```
-Este script prueba el flujo completo en un entorno desplegado:
-- ✅ Autenticación (Admin, Analyst, Affiliate)
-- ✅ Creación de afiliados
-- ✅ Listado de afiliados
-- ✅ Creación de solicitudes
-- ✅ Evaluación de solicitudes
+This script tests the complete flow in a deployed environment:
+- ✅ Authentication (Admin, Analyst, Affiliate)
+- ✅ Affiliate creation
+- ✅ Affiliate listing
+- ✅ Application creation
+- ✅ Application evaluation
 - ✅ Health checks
 
-### 3. Reporte de Verificación
-Para un detalle completo de cómo se cumple cada requerimiento del proyecto, consulta el archivo:
+### 3. Verification Report
+For a complete detail of how each project requirement is met, consult the file:
 📄 [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)
 
 ---
 
-## ☁️ Despliegue en Render.com
+## ☁️ Deployment on Render.com
 
-El proyecto incluye configuración lista para desplegar en Render.com usando Blueprints.
+The project includes configuration ready to deploy on Render.com using Blueprints.
 
-### Archivos de Despliegue
-- `render.yaml`: Blueprint de infraestructura as code.
-- `DEPLOY_RENDER.md`: Guía paso a paso para el despliegue.
+### Deployment Files
+- `render.yaml`: Infrastructure as Code Blueprint.
+- `DEPLOY_RENDER.md`: Step-by-step guide for deployment.
 
-Para desplegar, sigue las instrucciones detalladas en:
-📄 [Guía de Despliegue en Render](DEPLOY_RENDER.md)
+To deploy, follow the detailed instructions in:
+📄 [Deployment Guide on Render](DEPLOY_RENDER.md)
 
 ---
 
-## 🛠️ Tecnologías
+## 🛠️ Technologies
 
 ### Credit Application Service
 - Java 17
@@ -322,21 +322,21 @@ Para desplegar, sigue las instrucciones detalladas en:
 
 ---
 
-## 📊 Modelo de Datos
+## 📊 Data Model
 
-### Afiliado (Affiliate)
+### Affiliate
 ```json
 {
   "id": 1,
   "document": "1234567890",
-  "fullName": "Juan Pérez",
+  "fullName": "John Doe",
   "salary": 5000000.00,
   "affiliationDate": "2023-01-15",
   "status": "ACTIVE"
 }
 ```
 
-### Solicitud de Crédito (CreditApplication)
+### Credit Application
 ```json
 {
   "id": 1,
@@ -351,14 +351,14 @@ Para desplegar, sigue las instrucciones detalladas en:
 }
 ```
 
-### Evaluación de Riesgo (RiskEvaluation)
+### Risk Evaluation
 ```json
 {
   "id": 1,
   "document": "1234567890",
   "score": 642,
-  "riskLevel": "MEDIO",
-  "detail": "Historial crediticio moderado",
+  "riskLevel": "MEDIUM",
+  "detail": "Moderate credit history",
   "evaluationDate": "2025-12-09T19:21:31.345"
 }
 ```
@@ -367,29 +367,29 @@ Para desplegar, sigue las instrucciones detalladas en:
 
 ## 🐳 Docker
 
-### Comandos Útiles
+### Useful Commands
 
 ```bash
-# Iniciar servicios
+# Start services
 docker-compose up -d
 
-# Ver logs
+# View logs
 docker-compose logs -f
 
-# Detener servicios
+# Stop services
 docker-compose down
 
-# Limpiar todo (incluye volúmenes)
+# Clean all (includes volumes)
 docker-compose down -v
 
-# Reconstruir imágenes
+# Rebuild images
 docker-compose up --build -d
 
-# Ver estado
+# View status
 docker-compose ps
 ```
 
-### Conexión a PostgreSQL
+### Connection to PostgreSQL
 
 ```bash
 docker exec -it coopcredit-db psql -U postgres -d coopcredit_db
@@ -397,35 +397,35 @@ docker exec -it coopcredit-db psql -U postgres -d coopcredit_db
 
 ---
 
-## 📈 Métricas y Observabilidad
+## 📈 Metrics and Observability
 
-### Verificar Estado del Sistema
+### Verify System Status
 
 ```bash
 curl http://localhost:8080/actuator/health | jq .
 ```
 
-### Ver Métricas
+### View Metrics
 
 ```bash
-# Métricas generales
+# General metrics
 curl http://localhost:8080/actuator/metrics | jq '.names'
 
-# Métricas específicas
+# Specific metrics
 curl http://localhost:8080/actuator/metrics/http.server.requests | jq .
 ```
 
-### Métricas Custom Implementadas
+### Custom Metrics Implemented
 
-- `credit_applications_created_total` - Total de solicitudes creadas
-- `credit_applications_evaluated_total` - Total de solicitudes evaluadas
-- `http_request_duration_seconds` - Duración de requests HTTP
+- `credit_applications_created_total` - Total applications created
+- `credit_applications_evaluated_total` - Total applications evaluated
+- `http_request_duration_seconds` - HTTP request duration
 
 ---
 
-## 🔧 Configuración
+## 🔧 Configuration
 
-### Variables de Entorno (application.yml)
+### Environment Variables (application.yml)
 
 ```yaml
 # Database
@@ -443,20 +443,20 @@ risk.central.url=http://localhost:8081
 
 ---
 
-## 🤝 Desarrolladores
+## 🤝 Developers
 
-- Arquitectura: Hexagonal (Ports & Adapters)
-- Patrones: Repository, Use Case, DTO, Builder
-- Principios: SOLID, Clean Code, DRY
-
----
-
-## 📄 Licencia
-
-Este proyecto es un ejemplo educativo para demostración de arquitectura de microservicios.
+- Architecture: Hexagonal (Ports & Adapters)
+- Patterns: Repository, Use Case, DTO, Builder
+- Principles: SOLID, Clean Code, DRY
 
 ---
 
-## 📞 Soporte
+## 📄 License
 
-Para reportar issues o sugerencias, por favor abrir un ticket en el repositorio.
+This project is an educational example for microservices architecture demonstration.
+
+---
+
+## 📞 Support
+
+To report issues or suggestions, please open a ticket in the repository.

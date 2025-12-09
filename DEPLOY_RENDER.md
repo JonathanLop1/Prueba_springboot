@@ -1,77 +1,77 @@
-# 🚀 Guía de Despliegue en Render
+# 🚀 Deployment Guide on Render
 
-Esta guía te permitirá desplegar el backend de **CoopCredit** en [Render.com](https://render.com) de forma rápida y gratuita.
+This guide will allow you to deploy the **CoopCredit** backend on [Render.com](https://render.com) quickly and for free.
 
-## 📋 Prerrequisitos
+## 📋 Prerequisites
 
-1.  Tener una cuenta en [Render.com](https://render.com).
-2.  Tener este código subido a un repositorio de **GitHub** o **GitLab**.
-
----
-
-## ⚡ Opción A: Despliegue Automático (Recomendado)
-
-Hemos creado un archivo `render.yaml` que define toda la infraestructura necesaria (Base de datos + 2 Microservicios).
-
-1.  En el dashboard de Render, ve a **Blueprints**.
-2.  Haz clic en **New Blueprint Instance**.
-3.  Conecta tu repositorio de GitHub/GitLab.
-4.  Render detectará automáticamente el archivo `render.yaml`.
-5.  Haz clic en **Apply**.
-
-¡Listo! Render creará:
-*   Una base de datos PostgreSQL.
-*   El servicio `risk-central-mock`.
-*   El servicio `credit-application-service` (conectado automáticamente a la BD y al mock).
+1.  Have an account on [Render.com](https://render.com).
+2.  Have this code uploaded to a **GitHub** or **GitLab** repository.
 
 ---
 
-## 🛠️ Opción B: Despliegue Manual
+## ⚡ Option A: Automatic Deployment (Recommended)
 
-Si prefieres hacerlo paso a paso:
+We have created a `render.yaml` file that defines all the necessary infrastructure (Database + 2 Microservices).
 
-### 1. Crear Base de Datos
+1.  In the Render dashboard, go to **Blueprints**.
+2.  Click on **New Blueprint Instance**.
+3.  Connect your GitHub/GitLab repository.
+4.  Render will automatically detect the `render.yaml` file.
+5.  Click on **Apply**.
+
+Done! Render will create:
+*   A PostgreSQL database.
+*   The `risk-central-mock` service.
+*   The `credit-application-service` (automatically connected to the DB and the mock).
+
+---
+
+## 🛠️ Option B: Manual Deployment
+
+If you prefer to do it step by step:
+
+### 1. Create Database
 1.  **New +** -> **PostgreSQL**.
 2.  Name: `coopcredit-db`.
 3.  Database: `coopcredit_db`.
-4.  User: `postgres`.
+4.  User: `coopcredit_user`.
 5.  Plan: **Free**.
-6.  **IMPORTANTE**: Copia la `Internal Connection URL` cuando termine de crearse.
+6.  **IMPORTANT**: Copy the `Internal Connection URL` when it finishes creating.
 
-### 2. Desplegar Risk Central Mock
+### 2. Deploy Risk Central Mock
 1.  **New +** -> **Web Service**.
-2.  Conecta tu repo.
+2.  Connect your repo.
 3.  **Root Directory**: `risk-central-mock-service`.
 4.  **Runtime**: Docker.
 5.  **Name**: `risk-central-mock`.
 6.  **Plan**: Free.
 7.  **Environment Variables**:
     *   `SERVER_PORT`: `8080`
-8.  Crear Web Service.
+8.  Create Web Service.
 
-### 3. Desplegar Credit Application Service
+### 3. Deploy Credit Application Service
 1.  **New +** -> **Web Service**.
-2.  Conecta tu repo.
+2.  Connect your repo.
 3.  **Root Directory**: `credit-application-service`.
 4.  **Runtime**: Docker.
 5.  **Name**: `credit-application-service`.
 6.  **Plan**: Free.
 7.  **Environment Variables**:
     *   `SERVER_PORT`: `8080`
-    *   `JWT_SECRET`: (Inventa una clave larga y segura)
-    *   `RISK_CENTRAL_URL`: (La URL del servicio creado en el paso 2, ej: `https://risk-central-mock.onrender.com`)
-    *   `SPRING_DATASOURCE_URL`: (Pega la `Internal Connection URL` del paso 1. **OJO**: Si empieza por `postgres://`, cámbialo a `jdbc:postgresql://` manteniendo el resto igual).
-    *   `SPRING_DATASOURCE_USERNAME`: `postgres`
-    *   `SPRING_DATASOURCE_PASSWORD`: (La contraseña de la BD).
-8.  Crear Web Service.
+    *   `JWT_SECRET`: (Invent a long and secure key)
+    *   `RISK_CENTRAL_URL`: (The URL of the service created in step 2, e.g., `https://risk-central-mock.onrender.com`)
+    *   `SPRING_DATASOURCE_URL`: (Paste the `Internal Connection URL` from step 1. **NOTE**: If it starts with `postgres://`, change it to `jdbc:postgresql://` keeping the rest the same).
+    *   `SPRING_DATASOURCE_USERNAME`: `coopcredit_user`
+    *   `SPRING_DATASOURCE_PASSWORD`: (The DB password).
+8.  Create Web Service.
 
 ---
 
-## 🔍 Verificación
+## 🔍 Verification
 
-Una vez desplegado, puedes probar los endpoints usando la URL pública que te da Render (ej: `https://credit-application-service.onrender.com`).
+Once deployed, you can test the endpoints using the public URL provided by Render (e.g., `https://credit-application-service.onrender.com`).
 
 **Health Check:**
 ```bash
-curl https://<TU-URL>/actuator/health
+curl https://<YOUR-URL>/actuator/health
 ```

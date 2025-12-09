@@ -1,90 +1,90 @@
-# 🕵️ Reporte de Verificación de Cumplimiento
+# 🕵️ Compliance Verification Report
 
-Este documento detalla cómo se cumple cada requerimiento del enunciado y dónde encontrar la evidencia en el código.
+This document details how each requirement of the statement is met and where to find the evidence in the code.
 
-## 1. Requerimientos Funcionales
+## 1. Functional Requirements
 
-### 1.1 Gestión de Afiliados
-> **Requisito**: Registrar, editar, validar (doc único, salario > 0, estado).
-- **Implementación**: `RegisterAffiliateUseCase.java`
-- **Validación**:
-    - Annotations `@NotNull`, `@Min` en `CreateAffiliateRequest`.
-    - Test Manual: `test-api.sh` (Crea afiliado y verifica respuesta).
+### 1.1 Affiliate Management
+> **Requirement**: Register, edit, validate (unique doc, salary > 0, status).
+- **Implementation**: `RegisterAffiliateUseCase.java`
+- **Validation**:
+    - Annotations `@NotNull`, `@Min` in `CreateAffiliateRequest`.
+    - Manual Test: `test-api.sh` (Creates affiliate and verifies response).
 
-### 1.2 Gestión de Solicitudes
-> **Requisito**: Flujo PENDIENTE -> Risk Central -> Políticas -> APROBADO/RECHAZADO.
-- **Implementación**:
-    - `RegisterCreditApplicationUseCase.java`: Crea en PENDIENTE.
-    - `EvaluateCreditApplicationUseCase.java`: Llama a Risk Central y decide.
-- **Pruebas Unitarias (`RegisterCreditApplicationUseCaseTest.java`)**:
-    - `shouldRegisterApplicationSuccessfully`: Verifica creación correcta.
-    - `shouldThrowExceptionWhenAmountExceedsLimit`: Verifica regla 10x salario.
-    - `shouldThrowExceptionWhenQuotaIncomeRatioExceeded`: Verifica regla 40% ingreso.
-    - `shouldThrowExceptionWhenSeniorityIsInsufficient`: Verifica antigüedad 6 meses.
+### 1.2 Application Management
+> **Requirement**: Flow PENDING -> Risk Central -> Policies -> APPROVED/REJECTED.
+- **Implementation**:
+    - `RegisterCreditApplicationUseCase.java`: Creates in PENDING.
+    - `EvaluateCreditApplicationUseCase.java`: Calls Risk Central and decides.
+- **Unit Tests (`RegisterCreditApplicationUseCaseTest.java`)**:
+    - `shouldRegisterApplicationSuccessfully`: Verifies correct creation.
+    - `shouldThrowExceptionWhenAmountExceedsLimit`: Verifies 10x salary rule.
+    - `shouldThrowExceptionWhenQuotaIncomeRatioExceeded`: Verifies 40% income rule.
+    - `shouldThrowExceptionWhenSeniorityIsInsufficient`: Verifies 6 months seniority.
 
 ### 1.3 Risk Central Mock
-> **Requisito**: Endpoint POST /risk-evaluation, determinista por documento.
-- **Implementación**: `risk-central-mock-service` (Controller y Service).
-- **Prueba**:
-    - El servicio devuelve siempre el mismo score para el mismo ID.
-    - Verificado en `EvaluateCreditApplicationUseCaseTest.java` (mocks de respuesta).
+> **Requirement**: POST /risk-evaluation endpoint, deterministic by document.
+- **Implementation**: `risk-central-mock-service` (Controller and Service).
+- **Test**:
+    - The service always returns the same score for the same ID.
+    - Verified in `EvaluateCreditApplicationUseCaseTest.java` (response mocks).
 
-### 1.4 Seguridad y Roles
-> **Requisito**: JWT, Roles (AFILIADO, ANALISTA, ADMIN).
-- **Implementación**: `JwtAuthenticationFilter`, `SecurityConfig`.
-- **Pruebas de Integración (`CreditApplicationControllerTest.java`)**:
-    - `shouldCreateApplicationSuccessfully`: Con rol `AFILIADO`.
-    - `shouldEvaluateApplicationSuccessfully`: Con rol `ANALISTA`.
-    - `shouldDenyEvaluationAccessForAffiliate`: Verifica que `AFILIADO` **NO** puede evaluar (403 Forbidden).
+### 1.4 Security and Roles
+> **Requirement**: JWT, Roles (AFFILIATE, ANALYST, ADMIN).
+- **Implementation**: `JwtAuthenticationFilter`, `SecurityConfig`.
+- **Integration Tests (`CreditApplicationControllerTest.java`)**:
+    - `shouldCreateApplicationSuccessfully`: With `AFFILIATE` role.
+    - `shouldEvaluateApplicationSuccessfully`: With `ANALYST` role.
+    - `shouldDenyEvaluationAccessForAffiliate`: Verifies that `AFFILIATE` **CANNOT** evaluate (403 Forbidden).
 
-## 2. Requerimientos No Funcionales
+## 2. Non-Functional Requirements
 
-### 2.1 Arquitectura Hexagonal
-> **Requisito**: Dominios puros, puertos y adaptadores.
-- **Evidencia**: Estructura de carpetas:
-    - `domain/model`: Entidades puras (`Affiliate`, `CreditApplication`).
+### 2.1 Hexagonal Architecture
+> **Requirement**: Pure domains, ports, and adapters.
+- **Evidence**: Folder structure:
+    - `domain/model`: Pure entities (`Affiliate`, `CreditApplication`).
     - `domain/port`: Interfaces (`RepositoryPort`).
-    - `infrastructure/adapter`: Implementaciones (`JpaAdapter`, `RestController`).
+    - `infrastructure/adapter`: Implementations (`JpaAdapter`, `RestController`).
 
-### 2.2 Persistencia y Transacciones
-> **Requisito**: JPA, Relaciones, @Transactional.
-- **Evidencia**:
-    - Uso de `@Transactional` en los UseCases.
-    - Relación `@OneToMany` en `AffiliateEntity`.
-    - Flyway: Migraciones en `src/main/resources/db/migration`.
+### 2.2 Persistence and Transactions
+> **Requirement**: JPA, Relationships, @Transactional.
+- **Evidence**:
+    - Use of `@Transactional` in UseCases.
+    - `@OneToMany` relationship in `AffiliateEntity`.
+    - Flyway: Migrations in `src/main/resources/db/migration`.
 
-### 2.3 Observabilidad
-> **Requisito**: Actuator, Metrics, Prometheus.
-- **Evidencia**:
-    - `docker-compose.yml`: Servicios `prometheus` y `grafana`.
-    - Dependencia `micrometer-registry-prometheus` en `pom.xml`.
-    - Endpoint `/actuator/prometheus` funcional.
+### 2.3 Observability
+> **Requirement**: Actuator, Metrics, Prometheus.
+- **Evidence**:
+    - `docker-compose.yml`: `prometheus` and `grafana` services.
+    - `micrometer-registry-prometheus` dependency in `pom.xml`.
+    - Functional `/actuator/prometheus` endpoint.
 
-### 2.4 Pruebas (El punto crítico completado)
-> **Requisito**: Unitarias (Mockito) e Integración.
-- **Evidencia**:
-    - `mvn test` ejecuta 13 pruebas exitosas.
-    - Cobertura de casos de éxito y error (reglas de negocio).
+### 2.4 Testing (The critical completed point)
+> **Requirement**: Unit (Mockito) and Integration.
+- **Evidence**:
+    - `mvn test` runs 13 successful tests.
+    - Coverage of success and error cases (business rules).
 
 ---
 
-## 🧪 Cómo Verificarlo Tú Mismo
+## 🧪 How to Verify It Yourself
 
-### Paso 1: Verificación de Código y Pruebas
-Ejecuta los tests automáticos para validar la lógica interna:
+### Step 1: Code and Test Verification
+Run the automatic tests to validate the internal logic:
 ```bash
 cd credit-application-service
 mvn test
 ```
-**Resultado esperado**: `BUILD SUCCESS` con 0 fallos.
+**Expected result**: `BUILD SUCCESS` with 0 failures.
 
-### Paso 2: Verificación Funcional End-to-End
-Ejecuta el script de pruebas de integración real (requiere Docker corriendo):
+### Step 2: End-to-End Functional Verification
+Run the real integration test script (requires Docker running):
 ```bash
 ./test-api.sh
 ```
-**Resultado esperado**:
-- Login exitoso (Admin, Analista, Afiliado).
-- Creación de afiliado.
-- Creación de solicitud.
-- Evaluación automática (APROBADO/RECHAZADO).
+**Expected result**:
+- Successful Login (Admin, Analyst, Affiliate).
+- Affiliate creation.
+- Application creation.
+- Automatic evaluation (APPROVED/REJECTED).

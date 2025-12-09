@@ -1,18 +1,18 @@
-# Guía de Observabilidad - CoopCredit
+# Observability Guide - CoopCredit
 
-## 📊 Configuración Completa de Observabilidad
+## 📊 Complete Observability Configuration
 
-### Actuator Endpoints Disponibles
+### Available Actuator Endpoints
 
 Base URL: `http://localhost:8080/actuator`
 
-| Endpoint | Descripción | Ejemplo |
+| Endpoint | Description | Example |
 |----------|-------------|---------|
-| `/health` | Estado del sistema y componentes | Ver estado DB, disco, etc |
-| `/info` | Información de la aplicación | Versión, build info |
-| `/metrics` | Lista de métricas disponibles | 106+ métricas |
-| `/metrics/{name}` | Métrica específica | `/metrics/jvm.memory.used` |
-| `/prometheus` | Formato Prometheus | Para scraping |
+| `/health` | System and component status | View DB status, disk, etc |
+| `/info` | Application information | Version, build info |
+| `/metrics` | List of available metrics | 106+ metrics |
+| `/metrics/{name}` | Specific metric | `/metrics/jvm.memory.used` |
+| `/prometheus` | Prometheus format | For scraping |
 
 ---
 
@@ -23,7 +23,7 @@ Base URL: `http://localhost:8080/actuator`
 GET http://localhost:8080/actuator/health
 ```
 
-### Respuesta
+### Response
 ```json
 {
   "status": "UP",
@@ -50,25 +50,25 @@ GET http://localhost:8080/actuator/health
 }
 ```
 
-### Estados Posibles
-- `UP` - Servicio funcionando correctamente
-- `DOWN` - Servicio con problemas
-- `OUT_OF_SERVICE` - Servicio deshabilitado
-- `UNKNOWN` - Estado desconocido
+### Possible States
+- `UP` - Service working correctly
+- `DOWN` - Service with issues
+- `OUT_OF_SERVICE` - Service disabled
+- `UNKNOWN` - Unknown state
 
 ---
 
-## 📈 Métricas Personalizadas (Micrometer)
+## 📈 Custom Metrics (Micrometer)
 
-### Métricas de Negocio
+### Business Metrics
 
-#### 1. Solicitudes Creadas
+#### 1. Created Applications
 ```bash
 GET /actuator/metrics/credit_applications_created_total
 ```
 
-**Tipo**: Counter  
-**Descripción**: Total de solicitudes de crédito creadas  
+**Type**: Counter  
+**Description**: Total credit applications created  
 **Tags**: `status` (success/error)
 
 ```json
@@ -89,55 +89,55 @@ GET /actuator/metrics/credit_applications_created_total
 }
 ```
 
-#### 2. Solicitudes Evaluadas
+#### 2. Evaluated Applications
 ```bash
 GET /actuator/metrics/credit_applications_evaluated_total
 ```
 
-**Tipo**: Counter  
-**Descripción**: Total de solicitudes evaluadas  
+**Type**: Counter  
+**Description**: Total applications evaluated  
 **Tags**: `result` (approved/rejected)
 
-#### 3. Duración de Evaluaciones
+#### 3. Evaluation Duration
 ```bash
 GET /actuator/metrics/credit_application_evaluation_duration
 ```
 
-**Tipo**: Timer  
-**Descripción**: Tiempo de procesamiento de evaluaciones  
-**Estadísticas**: count, total_time, max, mean
+**Type**: Timer  
+**Description**: Evaluation processing time  
+**Statistics**: count, total_time, max, mean
 
-#### 4. Fallos de Autenticación
+#### 4. Authentication Failures
 ```bash
 GET /actuator/metrics/authentication_failures_total
 ```
 
-**Tipo**: Counter  
-**Descripción**: Intentos fallidos de autenticación
+**Type**: Counter  
+**Description**: Failed authentication attempts
 
 ---
 
-## 🎯 Métricas del Sistema (Spring Boot)
+## 🎯 System Metrics (Spring Boot)
 
 ### HTTP Requests
 ```bash
 GET /actuator/metrics/http.server.requests
 ```
 
-**Tags disponibles:**
-- `uri` - Endpoint accedido
+**Available Tags:**
+- `uri` - Accessed endpoint
 - `method` - HTTP method (GET, POST, etc)
 - `status` - HTTP status code
 - `outcome` - SUCCESS, CLIENT_ERROR, SERVER_ERROR
 
-**Ejemplo:**
+**Example:**
 ```bash
 curl 'http://localhost:8080/actuator/metrics/http.server.requests?tag=uri:/api/applications'
 ```
 
-### JVM Métricas
+### JVM Metrics
 
-#### Memoria
+#### Memory
 ```bash
 GET /actuator/metrics/jvm.memory.used
 GET /actuator/metrics/jvm.memory.max
@@ -156,7 +156,7 @@ GET /actuator/metrics/jvm.threads.live
 GET /actuator/metrics/jvm.threads.peak
 ```
 
-### Base de Datos (HikariCP)
+### Database (HikariCP)
 
 ```bash
 GET /actuator/metrics/jdbc.connections.active
@@ -173,7 +173,7 @@ GET /actuator/metrics/jdbc.connections.min
 GET http://localhost:8080/actuator/prometheus
 ```
 
-### Formato de Salida
+### Output Format
 ```prometheus
 # HELP credit_applications_created_total Total credit applications created
 # TYPE credit_applications_created_total counter
@@ -189,7 +189,7 @@ http_server_requests_seconds_count{application="credit-application-service",meth
 http_server_requests_seconds_sum{application="credit-application-service",method="POST",status="200",uri="/api/applications",} 0.156789
 ```
 
-### Configuración Prometheus (prometheus.yml)
+### Prometheus Configuration (prometheus.yml)
 ```yaml
 scrape_configs:
   - job_name: 'coopcredit'
@@ -200,7 +200,7 @@ scrape_configs:
 
 ---
 
-## 🛠️ Configuración (application.yml)
+## 🛠️ Configuration (application.yml)
 
 ```yaml
 management:
@@ -226,9 +226,9 @@ management:
 
 ---
 
-## 📊 Implementación de Métricas Custom
+## 📊 Custom Metrics Implementation
 
-### Usando @Aspect (AOP)
+### Using @Aspect (AOP)
 
 ```java
 @Aspect
@@ -237,7 +237,7 @@ public class MonitoringAspect {
     
     private final MeterRegistry meterRegistry;
     
-    // Counter: Solicitudes creadas
+    // Counter: Created applications
     @AfterReturning("execution(* com.coopcredit..usecase.RegisterCreditApplicationUseCase.execute(..))")
     public void incrementCreatedApplications() {
         meterRegistry.counter(
@@ -246,7 +246,7 @@ public class MonitoringAspect {
         ).increment();
     }
     
-    // Timer: Duración de evaluaciones
+    // Timer: Evaluation duration
     @Around("execution(* com.coopcredit..usecase.EvaluateCreditApplicationUseCase.execute(..))")
     public Object timeEvaluation(ProceedingJoinPoint joinPoint) throws Throwable {
         return Timer.builder("credit_application_evaluation_duration")
@@ -256,7 +256,7 @@ public class MonitoringAspect {
 }
 ```
 
-### Uso Directo en Código
+### Direct Usage in Code
 
 ```java
 @Service
@@ -272,7 +272,7 @@ public class AuthenticationUseCase {
     
     public void login(LoginRequest request) {
         try {
-            // ... lógica de autenticación
+            // ... authentication logic
         } catch (BadCredentialsException e) {
             failureCounter.increment();
             throw e;
@@ -283,85 +283,85 @@ public class AuthenticationUseCase {
 
 ---
 
-## 🚀 Comandos Útiles
+## 🚀 Useful Commands
 
-### Verificar Health
+### Verify Health
 ```bash
 curl http://localhost:8080/actuator/health | jq .
 ```
 
-### Listar Todas las Métricas
+### List All Metrics
 ```bash
 curl http://localhost:8080/actuator/metrics | jq '.names'
 ```
 
-### Ver Métrica Específica
+### View Specific Metric
 ```bash
 curl http://localhost:8080/actuator/metrics/credit_applications_created_total | jq .
 ```
 
-### Filtrar por Tags
+### Filter by Tags
 ```bash
 curl 'http://localhost:8080/actuator/metrics/http.server.requests?tag=status:200&tag=method:POST' | jq .
 ```
 
-### Export para Prometheus
+### Export for Prometheus
 ```bash
 curl http://localhost:8080/actuator/prometheus > metrics.txt
 ```
 
 ---
 
-## 📈 Integración con Grafana
+## 📈 Integration with Grafana
 
-### Dashboard Recomendado
+### Recommended Dashboard
 
 **Datasource**: Prometheus
 
-**Paneles Sugeridos:**
+**Suggested Panels:**
 
-1. **Solicitudes por Estado**
+1. **Applications by Status**
    - Query: `rate(credit_applications_created_total[5m])`
-   - Tipo: Graph
+   - Type: Graph
 
-2. **Tiempo de Evaluación**
+2. **Evaluation Time**
    - Query: `credit_application_evaluation_duration_seconds`
-   - Tipo: Heatmap
+   - Type: Heatmap
 
 3. **HTTP Requests Rate**
    - Query: `rate(http_server_requests_seconds_count[1m])`
-   - Tipo: Graph
+   - Type: Graph
    - Group by: uri, method
 
 4. **Memory Usage**
    - Query: `jvm_memory_used_bytes{area="heap"}`
-   - Tipo: Gauge
+   - Type: Gauge
 
 5. **Database Connections**
    - Query: `jdbc_connections_active`
-   - Tipo: Gauge
+   - Type: Gauge
 
 ---
 
 ## 🔍 Troubleshooting
 
-### Endpoint No Disponible
+### Endpoint Not Available
 
-**Problema**: 404 en `/actuator/metrics`
+**Problem**: 404 on `/actuator/metrics`
 
-**Solución**:
+**Solution**:
 ```yaml
 management:
   endpoints:
     web:
       exposure:
-        include: "*"  # O específicamente: health,metrics,prometheus
+        include: "*"  # Or specifically: health,metrics,prometheus
 ```
 
-### Métricas No Aparecen
+### Metrics Do Not Appear
 
-**Verificar**:
-1. Dependency en `pom.xml`:
+**Verify**:
+1. Dependency in `pom.xml`:
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -373,62 +373,62 @@ management:
 </dependency>
 ```
 
-2. Bean de MeterRegistry inyectado correctamente
+2. MeterRegistry Bean injected correctly
 
-### Prometheus No Scrapping
+### Prometheus Not Scraping
 
-**Verificar**:
-1. Endpoint accesible: `curl http://localhost:8080/actuator/prometheus`
-2. Configuración `prometheus.yml` correcta
-3. Target en Prometheus UI muestra "UP"
+**Verify**:
+1. Endpoint accessible: `curl http://localhost:8080/actuator/prometheus`
+2. `prometheus.yml` configuration correct
+3. Target in Prometheus UI shows "UP"
 
 ---
 
 ## 📝 Best Practices
 
-### Nombres de Métricas
-- Usar snake_case: `credit_applications_created_total`
-- Sufijos estándar:
-  - `_total` para counters
-  - `_duration_seconds` para timers
-  - `_bytes` para tamaños
+### Metric Names
+- Use snake_case: `credit_applications_created_total`
+- Standard suffixes:
+  - `_total` for counters
+  - `_duration_seconds` for timers
+  - `_bytes` for sizes
 
 ### Tags
-- Usar para dimensiones: `status`, `type`, `result`
-- Evitar alta cardinalidad: NO usar IDs únicos
-- Consistencia entre métricas relacionadas
+- Use for dimensions: `status`, `type`, `result`
+- Avoid high cardinality: DO NOT use unique IDs
+- Consistency between related metrics
 
 ### Performance
-- Counters son económicos
-- Timers tienen overhead (usar solo donde importa)
-- Evitar crear métricas dinámicamente en runtime
+- Counters are cheap
+- Timers have overhead (use only where it matters)
+- Avoid creating metrics dynamically at runtime
 
 ---
 
-## ✅ Checklist de Observabilidad
+## ✅ Observability Checklist
 
-- [x] Actuator habilitado
-- [x] Health checks configurados
-- [x] Métricas expuestas
-- [x] Prometheus endpoint activo
-- [x] Métricas custom implementadas
-- [x] Tags configurados
-- [x] Application name en métricas
-- [] Grafana dashboards (opcional)
-- [ ] Alertas configuradas (opcional)
-- [ ] Distributed tracing (opcional)
+- [x] Actuator enabled
+- [x] Health checks configured
+- [x] Metrics exposed
+- [x] Prometheus endpoint active
+- [x] Custom metrics implemented
+- [x] Tags configured
+- [x] Application name in metrics
+- [] Grafana dashboards (optional)
+- [ ] Alerts configured (optional)
+- [ ] Distributed tracing (optional)
 
 ---
 
-## 🎯 Métricas Implementadas en CoopCredit
+## 🎯 Metrics Implemented in CoopCredit
 
-| Métrica | Tipo | Descripción |
+| Metric | Type | Description |
 |---------|------|-------------|
-| `credit_applications_created_total` | Counter | Solicitudes creadas |
-| `credit_applications_evaluated_total` | Counter | Solicitudes evaluadas |
-| `credit_application_creation_duration` | Timer | Tiempo de creación |
-| `credit_application_evaluation_duration` | Timer | Tiempo de evaluación |
-| `authentication_failures_total` | Counter | Fallos de autenticación |
-| `controller_method_duration` | Timer | Duración de métodos |
+| `credit_applications_created_total` | Counter | Created applications |
+| `credit_applications_evaluated_total` | Counter | Evaluated applications |
+| `credit_application_creation_duration` | Timer | Creation time |
+| `credit_application_evaluation_duration` | Timer | Evaluation time |
+| `authentication_failures_total` | Counter | Authentication failures |
+| `controller_method_duration` | Timer | Method duration |
 
-**Estado**: ✅ Todas funcionando y verificadas
+**Status**: ✅ All working and verified

@@ -1,173 +1,173 @@
-# 🎉 Observabilidad CoopCredit - Guía Completa
+# 🎉 CoopCredit Observability - Complete Guide
 
-## ✅ Sistema Completamente Configurado
+## ✅ System Fully Configured
 
-Tu stack de observabilidad está **101% listo y funcionando!**
+Your observability stack is **101% ready and working!**
 
 ---
 
-## 🌐 URLs de Acceso
+## 🌐 Access URLs
 
-| Servicio | URL | Credenciales | Estado |
+| Service | URL | Credentials | Status |
 |----------|-----|--------------|--------|
-| **Prometheus** | http://localhost:19090 | No requiere | ✅ UP |
+| **Prometheus** | http://localhost:19090 | Not required | ✅ UP |
 | **Grafana** | http://localhost:3000 | admin / admin | ✅ UP |
-| **Application** | http://localhost:8080 | Ver README | ✅ UP |
+| **Application** | http://localhost:8080 | See README | ✅ UP |
 | **Risk Central** | http://localhost:8081 | - | ✅ UP |
 
-> **Nota**: Prometheus usa puerto **19090** (en lugar del estándar 9090) para evitar conflictos con otros servicios.
+> **Note**: Prometheus uses port **19090** (instead of standard 9090) to avoid conflicts with other services.
 
 ---
 
-## 📊 Uso Rápido de Prometheus
+## 📊 Quick Prometheus Usage
 
-### 1. Abrir Prometheus
+### 1. Open Prometheus
 - **URL**: http://localhost:19090
-- Click en **Graph** en la barra superior
+- Click on **Graph** in the top bar
 
-### 2. Queries de Ejemplo
+### 2. Example Queries
 
-Copia y pega estas queries en el campo de búsqueda:
+Copy and paste these queries into the search field:
 
 ```promql
-# Ver solicitudes creadas totales
+# View total created applications
 credit_applications_created_total
 
-# TasaSolicitudes por segundo
+# Application rate per second
 rate(credit_applications_created_total[1m])
 
-# Tiempo promedio de evaluación
+# Average evaluation time
 rate(credit_application_evaluation_duration_seconds_sum[5m]) / 
 rate(credit_application_evaluation_duration_seconds_count[5m])
 
-# Memoria JVM usada
+# JVM Memory used
 jvm_memory_used_bytes{area="heap"}
 
-# HTTP Requests activos
+# Active HTTP Requests
 http_server_requests_seconds_count
 
-# Conexiones DB activas
+# Active DB Connections
 jdbc_connections_active
 ```
 
-### 3. Ver Targets
-- Click en **Status** → **Targets**
-- Verifica que `credit-application-service` esté **UP** (verde)
+### 3. View Targets
+- Click on **Status** → **Targets**
+- Verify that `credit-application-service` is **UP** (green)
 
 ---
 
-## 📈 Uso Rápido de Grafana
+## 📈 Quick Grafana Usage
 
 ### 1. Login
 
-1. Abrir http://localhost:3000
-2. Usuario: `admin`
+1. Open http://localhost:3000
+2. User: `admin`
 3. Password: `admin`
-4. (Primera vez) Skip change password o cambiarla
+4. (First time) Skip change password or change it
 
-### 2. Acceder al Dashboard
+### 2. Access Dashboard
 
-1. Click en **☰** (menú hamburguesa, top-left)
+1. Click on **☰** (hamburger menu, top-left)
 2. **Dashboards**
-3. Click en **CoopCredit - Business Metrics**
+3. Click on **CoopCredit - Business Metrics**
 
-### 3. Dashboard Incluye:
+### 3. Dashboard Includes:
 
-**8 Paneles Pre-configurados:**
+**8 Pre-configured Panels:**
 
-1. 📊 **Solicitudes de Crédito (Rate)** - Creación y Evaluación/segundo
-2. 🎯 **Total Solicitudes Creadas** - Counter total
-3. 🎯 **Total Solicitudes Evaluadas** - Counter total
-4. ⏱️ **Tiempo de Evaluación** - Latencia promedio
-5. 🌐 **HTTP Requests por Endpoint** - Tráfico desglosado
-6. 💾 **JVM Memory Usage** - Uso de memoria heap
-7. 🗄️ **Conexiones DB Activas** - Pool de conexiones
+1. 📊 **Credit Applications (Rate)** - Creation and Evaluation/second
+2. 🎯 **Total Applications Created** - Total Counter
+3. 🎯 **Total Applications Evaluated** - Total Counter
+4. ⏱️ **Evaluation Time** - Average latency
+5. 🌐 **HTTP Requests by Endpoint** - Broken down traffic
+6. 💾 **JVM Memory Usage** - Heap memory usage
+7. 🗄️ **Active DB Connections** - Connection pool
 8. ✅ **Application Status** - UP/DOWN
 
-**Características:**
-- ✅ Auto-refresh cada 5 segundos
-- ✅ Filtros por status, method, etc.
-- ✅ Visualizaciones en tiempo real
-- ✅ Totalmente personalizable
+**Features:**
+- ✅ Auto-refresh every 5 seconds
+- ✅ Filters by status, method, etc.
+- ✅ Real-time visualizations
+- ✅ Fully customizable
 
 ---
 
-## 🧪 Generar Tráfico para Ver Métricas
+## 🧪 Generate Traffic to View Metrics
 
 ```bash
-# Generar tráfico único
+# Generate single traffic
 ./test-api.sh
 
-# Generar tráfico continuo (terminal separada)
+# Generate continuous traffic (separate terminal)
 while true; do 
   ./test-api.sh
   sleep 10
 done
 ```
 
-**Resultado**: Verás las métricas actualizándose en temps real en Grafana!
+**Result**: You will see metrics updating in real-time in Grafana!
 
 ---
 
-## 🎯 Cómo Monitorear en Tiempo Real
+## 🎯 How to Monitor in Real-Time
 
-### Configuración Recomendada:
+### Recommended Configuration:
 
-1. **Pantalla 1**: Editor de código
-2. **Pantalla 2**: Grafana dashboard (http://localhost:3000)
+1. **Screen 1**: Code editor
+2. **Screen 2**: Grafana dashboard (http://localhost:3000)
    - Dashboard: CoopCredit - Business Metrics
    - Auto-refresh: 5s
-3. **Terminal**: Ejecutar `./test-api.sh` cuando sea necesario
+3. **Terminal**: Run `./test-api.sh` when needed
 
 **Workflow**:
-1. Haces cambios en el código
-2. Rebuild con `docker-compose up --build -d`
-3. Ejecutas `./test-api.sh`
-4. Ves métricas actualizándose en Grafana
-5. Analizas performance, errores, latencias
+1. Make changes in code
+2. Rebuild with `docker-compose up --build -d`
+3. Run `./test-api.sh`
+4. Watch metrics updating in Grafana
+5. Analyze performance, errors, latencies
 
 ---
 
-##  Queries PromQL Avanzadas
+##  Advanced PromQL Queries
 
 ### Performance
 
 ```promql
-# Percentil 95 de tiempos de respuesta
+# 95th Percentile of response times
 histogram_quantile(0.95,
   rate(http_server_requests_seconds_bucket[5m]))
 
-# Percentil 99
+# 99th Percentile
 histogram_quantile(0.99,
   rate(http_server_requests_seconds_bucket[5m]))
 
-# Requests más lentos
+# Slowest requests
 topk(5,
   rate(http_server_requests_seconds_sum[5m]) /
   rate(http_server_requests_seconds_count[5m]))
 ```
 
-### Errores
+### Errors
 
 ```promql
-# Rate de errores 5xx
+# 5xx Error Rate
 rate(http_server_requests_seconds_count{status=~"5.."}[1m])
 
-# Rate de errores 4xx
+# 4xx Error Rate
 rate(http_server_requests_seconds_count{status=~"4.."}[1m])
 
-# Tasa de éxito
+# Success Rate
 rate(http_server_requests_seconds_count{status=~"2.."}[1m]) /
 rate(http_server_requests_seconds_count[1m])
 ```
 
-### Recursos
+### Resources
 
 ```promql
 # CPU usage
 process_cpu_usage
 
-# Threads JVM
+# JVM Threads
 jvm_threads_live
 jvm_threads_daemon
 
@@ -181,46 +181,46 @@ hikaricp_connections_idle
 
 ---
 
-## 🔧 Personalizar Grafana
+## 🔧 Customize Grafana
 
-### Agregar Nuevo Panel
+### Add New Panel
 
-1. En dashboard, click **Add** → **Visualization**
-2. Selecciona datasource: **Prometheus**
-3. Ingresa query PromQL (ej: `jvm_threads_live`)
-4. Selecciona visualización:
-   - **Time series**: Gráfica de líneas
-   - **Gauge**: Medidor circular
-   - **Stat**: Número grande
-   - **Table**: Tabla de datos
-5. Personaliza colores, umbrales, títulos
+1. In dashboard, click **Add** → **Visualization**
+2. Select datasource: **Prometheus**
+3. Enter PromQL query (e.g., `jvm_threads_live`)
+4. Select visualization:
+   - **Time series**: Line graph
+   - **Gauge**: Circular meter
+   - **Stat**: Big number
+   - **Table**: Data table
+5. Customize colors, thresholds, titles
 6. Click **Apply**
 
-### Crear Alerta
+### Create Alert
 
-1. En un panel, click **Edit**
+1. In a panel, click **Edit**
 2. Tab **Alert**
 3. **Create alert rule from this panel**
-4. Configurar condición:
+4. Configure condition:
    ```
    WHEN avg() OF query(A, 5m, now) IS ABOVE 0.5
    ```
-5. Definir acción (email, Slack, Webhook)
+5. Define action (email, Slack, Webhook)
 6. **Save**
 
 ---
 
-## 📱 Integración con Otros Servicios
+## 📱 Integration with Other Services
 
-### Exportar Dashboard
+### Export Dashboard
 
 ```bash
-# Desde Grafana UI:
+# From Grafana UI:
 # Dashboard → Share → Export → Save to file
-# Archivo: coopcredit-dashboard.json
+# File: coopcredit-dashboard.json
 ```
 
-### Importar Dashboard
+### Import Dashboard
 
 ```bash
 # Grafana UI:
@@ -246,63 +246,63 @@ curl -X POST \
 
 ## 🛠️ Troubleshooting
 
-### Prometheus no muestra datos
+### Prometheus shows no data
 
 ```bash
-# 1. Verificar que Prometheus está UP
+# 1. Verify Prometheus is UP
 curl http://localhost:19090/-/healthy
 
-# 2. Ver logs
+# 2. View logs
 docker logs prometheus
 
-# 3. Verificar configuración
+# 3. Verify configuration
 docker exec prometheus cat /etc/prometheus/prometheus.yml
 
-# 4. Reiniciar
+# 4. Restart
 docker-compose restart prometheus
 ```
 
-### Grafana muestra "No data"
+### Grafana shows "No data"
 
-**Solución 1: Verificar Datasource**
+**Solution 1: Verify Datasource**
 1. Configuration → Data Sources → Prometheus
-2. URL debe ser: `http://prometheus:9090` (interno)
-3. Click **Save & Test** - debe decir "Data source is working"
+2. URL must be: `http://prometheus:9090` (internal)
+3. Click **Save & Test** - should say "Data source is working"
 
-**Solución 2: Verificar query**
-1. Ir a Prometheus: http://localhost:19090
-2. Ejecutar mismo query
-3. Si funciona en Prometheus pero no en Grafana → problema de datasource
+**Solution 2: Verify query**
+1. Go to Prometheus: http://localhost:19090
+2. Execute same query
+3. If it works in Prometheus but not in Grafana → datasource issue
 
-**Solución 3: Generar datos**
+**Solution 3: Generate data**
 ```bash
 ./test-api.sh
 ```
 
-### Dashboard no carga automáticamente
+### Dashboard does not load automatically
 
 ```bash
-# Verificar archivos
+# Verify files
 ls -la grafana/provisioning/dashboards/
 
-# Debe mostrar:
+# Should show:
 # - dashboard-provider.yml
 # - coopcredit-business.json
 
-# Reiniciar Grafana
+# Restart Grafana
 docker-compose restart grafana
 
-# Ver logs de provisioning
+# View provisioning logs
 docker logs grafana | grep provisioning
 ```
 
 ---
 
-## ✅ Verificación Completa
+## ✅ Complete Verification
 
 ```bash
-# Script de verificación todo-en-uno
-echo "🔍 Verificando Stack de Observabilidad..."
+# All-in-one verification script
+echo "🔍 Verifying Observability Stack..."
 echo ""
 
 # Prometheus
@@ -317,52 +317,52 @@ curl -s http://localhost:3000/api/health | jq -r '.database' && echo "✅" || ec
 echo -n "Application: "
 curl -s http://localhost:8080/actuator/health | jq -r '.status' && echo "✅" || echo "❌"
 
-# Métricas
-echo -n "Métricas: "
+# Metrics
+echo -n "Metrics: "
 curl -s 'http://localhost:19090/api/v1/query?query=up' | jq -r '.status' && echo "✅" || echo "❌"
 
 echo ""
-echo "🎉 Verificación completada!"
+echo "🎉 Verification completed!"
 ```
 
 ---
 
-## 📚 Recursos Adicionales
+## 📚 Additional Resources
 
-### Documentación
+### Documentation
 - [Prometheus Docs](https://prometheus.io/docs/)
 - [Grafana Docs](https://grafana.com/docs/)
 - [PromQL Tutorial](https://prometheus.io/docs/prometheus/latest/querying/basics/)
 
-### Dashboards Públicos
+### Public Dashboards
 - [Grafana Dashboard Library](https://grafana.com/grafana/dashboards/)
 - [Spring Boot Dashboards](https://grafana.com/grafana/dashboards/?search=spring+boot)
 
-### Archivos del Proyecto
-- Configuración Prometheus: `prometheus/prometheus.yml`
+### Project Files
+- Prometheus Configuration: `prometheus/prometheus.yml`
 - Dashboard JSON: `grafana/provisioning/dashboards/coopcredit-business.json`
 - Datasource: `grafana/provisioning/datasources/prometheus.yml`
 
 ---
 
-## 🎯 Próximos Pasos
+## 🎯 Next Steps
 
-1. **✅ Sistema Funcionando** - Stack completo operativo
-2. **📊 Explorar Métricas** - Probar queries en Prometheus
-3. **📈 Personalizar Dashboard** - Agregar paneles según necesidades
-4. **🔔 Configurar Alertas** - Notificaciones para eventos críticos
-5. **🚀 Productizar** - Ajustes para entorno de producción
-
----
-
-## 💡 Tips de Uso
-
-1. **Deja Grafana abierto** mientras desarrollas para ver métricas en tiempo real
-2. **Usa auto-refresh** de 5s para monitoreo continuo
-3. **Explora PromQL** - Es muy poderoso una vez que aprendes la sintaxis
-4. **Exporta dashboards** regularmente como backup
-5. **Crea alertas** para métricas críticas (latencia, errores, etc.)
+1. **✅ System Working** - Full stack operational
+2. **📊 Explore Metrics** - Test queries in Prometheus
+3. **📈 Customize Dashboard** - Add panels as needed
+4. **🔔 Configure Alerts** - Notifications for critical events
+5. **🚀 Productize** - Adjustments for production environment
 
 ---
 
-¡Tu observabilidad está 100% lista para monitorear CoopCredit en tiempo real! 🚀
+## 💡 Usage Tips
+
+1. **Leave Grafana open** while developing to see real-time metrics
+2. **Use auto-refresh** of 5s for continuous monitoring
+3. **Explore PromQL** - It's very powerful once you learn the syntax
+4. **Export dashboards** regularly as backup
+5. **Create alerts** for critical metrics (latency, errors, etc.)
+
+---
+
+Your observability is 100% ready to monitor CoopCredit in real-time! 🚀
