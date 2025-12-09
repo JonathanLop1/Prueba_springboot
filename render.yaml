@@ -28,10 +28,7 @@ services:
       - key: JWT_EXPIRATION
         value: 86400000
       - key: RISK_CENTRAL_URL
-        fromService:
-          type: web
-          name: risk-central-mock
-          property: url
+        value: http://risk-central-mock:8080
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: coopcredit-db
@@ -52,6 +49,6 @@ databases:
   # ---------------------------------------------------
   - name: coopcredit-db
     databaseName: coopcredit_db
-    user: postgres
+    user: coopcredit_user
     plan: free
     ipAllowList: [] # Allow all for simplicity, restrict in prod
